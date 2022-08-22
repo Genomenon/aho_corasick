@@ -540,8 +540,8 @@ namespace aho_corasick {
 			size_t size = search_text.size();
 			emit_collection remove_emits;
 			for (const auto& e : collected_emits) {
-				if ((e.get_start() == 0 || !std::isalpha(search_text.at(e.get_start() - 1))) &&
-					(e.get_end() + 1 == size || !std::isalpha(search_text.at(e.get_end() + 1)))
+				if ((e.get_start() == 0 || !std::isalnum(search_text.at(e.get_start() - 1))) &&
+					(e.get_end() + 1 == size || !std::isalnum(search_text.at(e.get_end() + 1)))
 					) {
 					continue;
 				}

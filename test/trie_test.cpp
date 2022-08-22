@@ -72,6 +72,15 @@ TEST_CASE("trie works as required", "[trie]") {
 		const auto it = emits.begin();
 		check_emit(*it, 0, 2, "bcd");
 	}
+	SECTION("boundaries") {
+		ac::trie t;
+		t.only_whole_words();
+		t.insert("aa");
+		t.finalize();
+
+		auto emits = t.parse_text("aab baa aa1 5aa");
+		REQUIRE(0 == emits.size());
+	}
 	SECTION("ushers test") {
 		ac::trie t;
 		t.insert("hers");
