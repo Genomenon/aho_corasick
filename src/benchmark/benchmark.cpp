@@ -69,31 +69,62 @@ size_t bench_aho_corasick(vector<string> text_strings, trie& t) {
 	return count;
 }
 
-int main(int argc, char** argv) {
-	cout << "*** Aho-Corasick Benchmark ***" << endl;
-
-	cout << "Generating input text ...";
+vector<string> gen_input()
+{
 	set<string> input_strings;
 	while (input_strings.size() < 10) {
 		input_strings.insert(gen_str(256));
 	}
-	vector<string> input_vector(input_strings.begin(), input_strings.end());
-	cout << " done" << endl;
+	return vector<string>(input_strings.begin(), input_strings.end());
+}
 
-	cout << "Generating search patterns ...";
+vector<string> gen_patterns()
+{
 	set<string> patterns;
 	while (patterns.size() < 1000000) {
 		patterns.insert(gen_str(8));
 	}
-	vector<string> pattern_vector(patterns.begin(), patterns.end());
-	cout << " done" << endl;
+	return vector<string>(patterns.begin(), patterns.end());
+}
 
-	cout << "Generating trie ...";
+trie gen_trie(const vector<string>& patterns)
+{
 	trie t;
 	for (auto& pattern : patterns) {
 		t.insert(pattern);
 	}
 	t.finalize();
+	return t;
+}
+
+tuple<chrono::high_resolution_clock::duration, chrono::high_resolution_clock::duration, bool>
+        bench1(const vector<string>& input_vector, const vector<string>& patterns, trie& t)
+{
+	auto start_time = chrono::high_resolution_clock::now();
+	size_t count_1 = bench_naive(input_vector, patterns);
+	auto end_time = chrono::high_resolution_clock::now();
+	auto time_1 = end_time - start_time;
+
+	start_time = chrono::high_resolution_clock::now();
+	size_t count_2 = bench_aho_corasick(input_vector, t);
+	end_time = chrono::high_resolution_clock::now();
+	auto time_2 = end_time - start_time;
+	return std::make_tuple(time_1, time_2, count_1 == count_2);
+}
+
+int main(int argc, char** argv) {
+	cout << "*** Aho-Corasick Benchmark ***" << endl;
+
+	cout << "Generating input text ...";
+	vector<string> input_vector = gen_input();
+	cout << " done" << endl;
+
+	cout << "Generating search patterns ...";
+	auto patterns = gen_patterns();
+	cout << " done" << endl;
+
+	cout << "Generating trie ...";
+	trie t = gen_trie(patterns);
 	cout << " done" << endl;
 
 	map<size_t, tuple<chrono::high_resolution_clock::duration, chrono::high_resolution_clock::duration>> timings;
@@ -101,21 +132,12 @@ int main(int argc, char** argv) {
 	cout << "Running ";
 	for (size_t i = 10; i > 0; --i) {
 		cout << ".";
-		auto start_time = chrono::high_resolution_clock::now();
-		size_t count_1 = bench_naive(input_vector, pattern_vector);
-		auto end_time = chrono::high_resolution_clock::now();
-		auto time_1 = end_time - start_time;
-
-		start_time = chrono::high_resolution_clock::now();
-		size_t count_2 = bench_aho_corasick(input_vector, t);
-		end_time = chrono::high_resolution_clock::now();
-		auto time_2 = end_time - start_time;
-
-		if (count_1 != count_2) {
+		auto benchRes = bench1(input_vector, patterns, t);
+		if (!get<2>(benchRes)) {
 			cout << "failed" << endl;
 		}
 
-		timings[i] = make_tuple(time_1, time_2);
+		timings[i] = make_tuple(get<0>(benchRes), get<1>(benchRes));
 	}
 	cout << " done" << endl;
 
