@@ -93,6 +93,7 @@ int main(int argc, char** argv) {
 	for (auto& pattern : patterns) {
 		t.insert(pattern);
 	}
+	t.finalize();
 	cout << " done" << endl;
 
 	map<size_t, tuple<chrono::high_resolution_clock::duration, chrono::high_resolution_clock::duration>> timings;

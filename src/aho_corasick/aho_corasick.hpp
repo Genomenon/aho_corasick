@@ -28,6 +28,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <stdexcept>
 #include <string>
 #include <queue>
 #include <utility>
@@ -485,8 +486,11 @@ namespace aho_corasick {
 			return token_collection(tokens);
 		}
 
-		emit_collection parse_text(string_type text) {
-			check_construct_failure_states();
+		emit_collection parse_text(string_type text) const {
+			if (!d_constructed_failure_states) {
+				throw std::runtime_error("must call finalize() before parse_text()");
+			}
+
 			size_t pos = 0;
 			state_ptr_type cur_state = d_root.get();
 			emit_collection collected_emits;
@@ -507,6 +511,12 @@ namespace aho_corasick {
 				collected_emits.swap(tmp);
 			}
 			return emit_collection(collected_emits);
+		}
+
+		void finalize() {
+			if (!d_constructed_failure_states) {
+				construct_failure_states();
+			}
 		}
 
 	private:
@@ -551,12 +561,6 @@ namespace aho_corasick {
 				result = cur_state->next_state(c);
 			}
 			return result;
-		}
-
-		void check_construct_failure_states() {
-			if (!d_constructed_failure_states) {
-				construct_failure_states();
-			}
 		}
 
 		void construct_failure_states() {

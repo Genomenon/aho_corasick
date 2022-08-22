@@ -45,6 +45,7 @@ TEST_CASE("trie works as required", "[trie]") {
 	SECTION("keyword and text are the same") {
 		ac::trie t;
 		t.insert("abc");
+		t.finalize();
 		auto emits = t.parse_text("abc");
 		const auto it = emits.begin();
 		check_emit(*it, 0, 2, "abc");
@@ -52,6 +53,7 @@ TEST_CASE("trie works as required", "[trie]") {
 	SECTION("text is longer than the keyword") {
 		ac::trie t;
 		t.insert("abc");
+		t.finalize();
 
 		auto emits = t.parse_text(" abc");
 
@@ -63,6 +65,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("abc");
 		t.insert("bcd");
 		t.insert("cde");
+		t.finalize();
 
 		auto emits = t.parse_text("bcd");
 
@@ -75,6 +78,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("his");
 		t.insert("she");
 		t.insert("he");
+		t.finalize();
 
 		auto emits = t.parse_text("ushers");
 		REQUIRE(3 == emits.size());
@@ -87,6 +91,7 @@ TEST_CASE("trie works as required", "[trie]") {
 	SECTION("misleading test") {
 		ac::trie t;
 		t.insert("hers");
+		t.finalize();
 
 		auto emits = t.parse_text("h he her hers");
 
@@ -99,6 +104,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("cauliflower");
 		t.insert("broccoli");
 		t.insert("tomatoes");
+		t.finalize();
 
 		auto emits = t.parse_text("2 cauliflowers, 3 tomatoes, 4 slices of veal, 100g broccoli");
 		REQUIRE(4 == emits.size());
@@ -113,6 +119,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		ac::trie t;
 		t.insert("he");
 		t.insert("hehehehe");
+		t.finalize();
 
 		auto emits = t.parse_text("hehehehehe");
 		REQUIRE(7 == emits.size());
@@ -132,6 +139,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("ab");
 		t.insert("cba");
 		t.insert("ababc");
+		t.finalize();
 
 		auto emits = t.parse_text("ababcbab");
 		REQUIRE(2 == emits.size());
@@ -144,6 +152,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		ac::trie t;
 		t.only_whole_words();
 		t.insert("sugar");
+		t.finalize();
 
 		auto emits = t.parse_text("sugarcane sugarcane sugar canesugar");
 		REQUIRE(1 == emits.size());
@@ -156,6 +165,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("Alpha");
 		t.insert("Beta");
 		t.insert("Gamma");
+		t.finalize();
 
 		const auto tokens = t.tokenise("Alpha Beta Gamma");
 		REQUIRE(5 == tokens.size());
@@ -166,6 +176,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("Alpha");
 		t.insert("Beta");
 		t.insert("Gamma");
+		t.finalize();
 
 		auto tokens = t.tokenise("Hear: Alpha team first, Beta from the rear, Gamma in reserve");
 		REQUIRE(7 == tokens.size());
@@ -185,6 +196,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert(L"turning");
 		t.insert(L"once");
 		t.insert(L"again");
+		t.finalize();
 
 		auto emits = t.parse_text(L"TurninG OnCe AgAiN");
 		REQUIRE(3 == emits.size());
@@ -200,6 +212,7 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("turning");
 		t.insert("once");
 		t.insert("again");
+		t.finalize();
 
 		auto emits = t.parse_text("TurninG OnCe AgAiN");
 		REQUIRE(3 == emits.size());
@@ -215,11 +228,13 @@ TEST_CASE("trie works as required", "[trie]") {
 		t.insert("hers");
 		t.insert("his");
 		t.insert("he");
+		t.finalize();
 
 		auto result = t.parse_text("she");
 		CHECK(result.size() == 1);
 
 		t.insert("she");
+		t.finalize();
 
 		result = t.parse_text("something");
 		CHECK(result.empty());
