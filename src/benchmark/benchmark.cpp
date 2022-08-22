@@ -121,8 +121,8 @@ int main(int argc, char** argv) {
 	cout << "Results: " << endl;
 	for (auto& i : timings) {
 		cout << "  loop #" << i.first;
-		cout << ", naive: " << chrono::duration_cast<chrono::milliseconds>(get<0>(i.second)).count();
-		cout << "ms, ac: " << chrono::duration_cast<chrono::milliseconds>(get<1>(i.second)).count() << "ms";
+		cout << ", naive: " << chrono::duration_cast<chrono::microseconds>(get<0>(i.second)).count();
+		cout << "us, ac: " << chrono::duration_cast<chrono::microseconds>(get<1>(i.second)).count() << "us";
 		cout << endl;
 	}
 
