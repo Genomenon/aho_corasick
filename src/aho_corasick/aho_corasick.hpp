@@ -32,6 +32,9 @@
 #include <queue>
 #include <utility>
 #include <vector>
+#include <limits>
+
+#include <boost/container/flat_map.hpp>
 
 namespace aho_corasick {
 
@@ -303,9 +306,9 @@ namespace aho_corasick {
 		typedef std::vector<CharType>            transition_collection;
 
 	private:
-		size_t                         d_depth;
+	        size_t                         d_depth;
 		ptr                            d_root;
-		std::map<CharType, unique_ptr> d_success;
+		boost::container::flat_map<CharType, unique_ptr> d_success;
 		ptr                            d_failure;
 		string_collection              d_emits;
 
